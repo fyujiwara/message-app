@@ -1,0 +1,15 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'app/models/application_record.rb'
+    - 'bin/bundle'
+    - 'config/application.rb'
+    - 'spec/**/*'
+
+Style/Documentation:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
