@@ -2,9 +2,7 @@
 
 class TargetingService
   module Targeter
-    class FemaleTargeter
-      TargeterResolver.add(self)
-
+    class FemaleTargeter < TargeterBase
       def call
         User.where(gender: :female)
       end
