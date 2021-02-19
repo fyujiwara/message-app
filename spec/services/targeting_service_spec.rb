@@ -20,6 +20,14 @@ RSpec.describe TargetingService do
         expect(targeter).to eq TargetingService::Targeter::FemaleTargeter
       end
     end
+    context 'when target type is teenager' do
+      let(:target) { FactoryBot.build(:target, type: :teenager) }
+
+      it 'return teenager targeter' do
+        targeter = TargetingService::TargeterResolver.resolve(target)
+        expect(targeter).to eq TargetingService::Targeter::TeenagerTargeter
+      end
+    end
   end
   describe TargetingService::Targeter do
     describe TargetingService::Targeter::MaleTargeter do
@@ -73,6 +81,35 @@ RSpec.describe TargetingService do
       it 'users not include unknown gender user' do
         users = TargetingService::Targeter::FemaleTargeter.new.call
         expect(users).to_not be_include(unknown_gender_user)
+      end
+    end
+
+    describe TargetingService::Targeter::TeenagerTargeter do
+      let!(:nine_years_old_user) { FactoryBot.create(:user, birthday: Time.current.beginning_of_day.ago(10.years).since(1.days)) }
+      let!(:ten_years_old_user) { FactoryBot.create(:user, birthday: Time.current.beginning_of_day.ago(10.years)) }
+      let!(:nineteen_years_old_user) { FactoryBot.create(:user, birthday: Time.current.beginning_of_day.ago(20.years).since(1.days)) }
+      let!(:twenty_years_old_user) { FactoryBot.create(:user, birthday: Time.current.beginning_of_day.ago(20.years)) }
+
+      before(:each) do
+        expect(nine_years_old_user.age).to eq 9
+        expect(ten_years_old_user.age).to eq 10
+        expect(nineteen_years_old_user.age).to eq 19
+        expect(twenty_years_old_user.age).to eq 20
+      end
+      it 'users teenager only' do
+        users = TargetingService::Targeter::TeenagerTargeter.new.call
+        expect(users).to be_include(ten_years_old_user)
+        expect(users).to be_include(nineteen_years_old_user)
+      end
+
+      it 'users not include nine years old user' do
+        users = TargetingService::Targeter::TeenagerTargeter.new.call
+        expect(users).to_not be_include(nine_years_old_user)
+      end
+
+      it 'users not include twenty years old user' do
+        users = TargetingService::Targeter::TeenagerTargeter.new.call
+        expect(users).to_not be_include(twenty_years_old_user)
       end
     end
   end

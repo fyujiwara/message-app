@@ -14,4 +14,7 @@
 class User < ApplicationRecord
   enum gender: { male: 0, female: 1, other: 2 }
 
+  def age
+    (Time.current.strftime('%Y%m%d').to_i - birthday.strftime('%Y%m%d').to_i) / 10_000
+  end
 end
